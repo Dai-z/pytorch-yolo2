@@ -21,7 +21,7 @@ import os
 from utils import *
 from cfg import parse_cfg
 from region_loss import RegionLoss
-from darknet import Darknet
+from darknet_infrared import Darknet, weights_init_xavier
 from models.tiny_yolo import TinyYoloNet
 
 
@@ -74,21 +74,23 @@ if use_cuda:
 model       = Darknet(cfgfile)
 region_loss = model.loss
 
-model.load_weights(weightfile)
 model.print_network()
+# model.apply(weights_init_xavier)
+model.load_weights(weightfile)
 
 region_loss.seen  = model.seen
-processed_batches = model.seen/batch_size
+processed_batches = model.seen//batch_size
 
 init_width        = model.width
 init_height       = model.height
-init_epoch        = model.seen/nsamples 
+init_epoch        = model.seen//nsamples
 
 kwargs = {'num_workers': num_workers, 'pin_memory': True} if use_cuda else {}
 test_loader = torch.utils.data.DataLoader(
     dataset.listDataset(testlist, shape=(init_width, init_height),
                    shuffle=False,
                    transform=transforms.Compose([
+                       transforms.Resize((init_height, init_width)),
                        transforms.ToTensor(),
                    ]), train=False),
     batch_size=batch_size, shuffle=False, **kwargs)
@@ -134,6 +136,7 @@ def train(epoch):
         dataset.listDataset(trainlist, shape=(init_width, init_height),
                        shuffle=True,
                        transform=transforms.Compose([
+                           transforms.Resize((init_height, init_width)),
                            transforms.ToTensor(),
                        ]), 
                        train=True, 
@@ -258,6 +261,6 @@ if evaluate:
     logging('evaluating ...')
     test(0)
 else:
-    for epoch in range(init_epoch, max_epochs): 
+    for epoch in range(int(init_epoch), int(max_epochs)):
         train(epoch)
         test(epoch)

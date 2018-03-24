@@ -6,3 +6,5 @@
 *.o
 *.so
 backup/
+datasets/
+*.mp4

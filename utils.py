@@ -219,7 +219,7 @@ def plot_boxes_cv2(img, boxes, savename=None, class_names=None, color=None):
         if len(box) >= 7 and class_names:
             cls_conf = box[5]
             cls_id = box[6]
-            print('%s: %f' % (class_names[cls_id], cls_conf))
+            # print('%s: %f' % (class_names[cls_id], cls_conf))
             classes = len(class_names)
             offset = cls_id * 123457 % classes
             red   = get_color(2, offset, classes)
@@ -277,7 +277,7 @@ def read_truths(lab_path):
         return np.array([])
     if os.path.getsize(lab_path):
         truths = np.loadtxt(lab_path)
-        truths = truths.reshape(truths.size/5, 5) # to avoid single truth problem
+        truths = truths.reshape(int(truths.size/5), 5) # to avoid single truth problem
         return truths
     else:
         return np.array([])
@@ -388,7 +388,7 @@ def scale_bboxes(bboxes, width, height):
 
 def file_lines(thefilepath):
     count = 0
-    thefile = open(thefilepath, 'rb')
+    thefile = open(thefilepath, 'r')
     while True:
         buffer = thefile.read(8192*1024)
         if not buffer:

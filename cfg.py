@@ -1,5 +1,6 @@
 import torch
 from utils import convert2cpu
+from torch.nn import init
 
 def parse_cfg(cfgfile):
     blocks = []
@@ -47,6 +48,7 @@ def print_cfg(blocks):
         if block['type'] == 'net':
             prev_width = int(block['width'])
             prev_height = int(block['height'])
+            prev_filters = int(block['channels'])
             continue
         elif block['type'] == 'convolutional':
             filters = int(block['filters'])
@@ -174,6 +176,14 @@ def load_conv_bn(buf, start, conv_model, bn_model):
     bn_model.running_var.copy_(torch.from_numpy(buf[start:start+num_b]));   start = start + num_b
     conv_model.weight.data.copy_(torch.from_numpy(buf[start:start+num_w])); start = start + num_w 
     return start
+
+def init_conv_bn(conv_model, bn_model):
+    # conv_model.weight.numel()
+    # bn_model.bias.numel()
+    init.xavier_normal(conv_model.weight.data, gain=0.02)
+    init.normal(bn_model.weight.data, mean=1.0, std= 0.02)
+    init.constant(bn_model.bias.data, val=0.0)
+
 
 def save_conv_bn(fp, conv_model, bn_model):
     if bn_model.bias.is_cuda:
