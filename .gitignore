@@ -5,6 +5,8 @@
 *.bk
 *.o
 *.so
+*~
 backup/
 datasets/
+predictions/
 *.mp4

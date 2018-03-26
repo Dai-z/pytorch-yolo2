@@ -54,7 +54,7 @@ max_epochs    = max_batches*batch_size/nsamples+1
 use_cuda      = True
 seed          = int(time.time())
 eps           = 1e-5
-save_interval = 10  # epoches
+save_interval = 50  # epoches
 dot_interval  = 70  # batches
 
 # Test parameters
@@ -255,6 +255,7 @@ def test(epoch):
     recall = 1.0*correct/(total+eps)
     fscore = 2.0*precision*recall/(precision+recall+eps)
     logging("precision: %f, recall: %f, fscore: %f" % (precision, recall, fscore))
+
 
 evaluate = False
 if evaluate:
