@@ -23,7 +23,10 @@ from cfg import parse_cfg
 from region_loss import RegionLoss
 from darknet_infrared import Darknet, weights_init_xavier
 from models.tiny_yolo import TinyYoloNet
+import warnings
 
+# don't show warming in python output.
+warnings.filterwarnings("ignore")
 
 # Training settings
 datacfg       = sys.argv[1]

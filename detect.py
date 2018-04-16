@@ -204,8 +204,8 @@ if __name__ == '__main__':
         weightfile = sys.argv[2]
         imgfile = sys.argv[3]
         # detect(cfgfile, weightfile, imgfile)
-        detect_file(cfgfile, weightfile, imgfile)
-        # detect_video_cv2(cfgfile, weightfile, imgfile)
+        # detect_file(cfgfile, weightfile, imgfile)
+        detect_video_cv2(cfgfile, weightfile, imgfile)
         #detect_cv2(cfgfile, weightfile, imgfile)
         #detect_skimage(cfgfile, weightfile, imgfile)
     else:

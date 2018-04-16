@@ -9,4 +9,5 @@
 backup/
 datasets/
 predictions/
+.idea/
 *.mp4
