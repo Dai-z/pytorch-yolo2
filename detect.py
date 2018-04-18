@@ -4,6 +4,7 @@ from PIL import Image, ImageDraw
 from models.tiny_yolo import TinyYoloNet
 from utils import *
 from darknet_infrared import Darknet
+from sort import Sort
 
 def detect(cfgfile, weightfile, imgfile):
     m = Darknet(cfgfile)
@@ -25,17 +26,16 @@ def detect(cfgfile, weightfile, imgfile):
 
     img = Image.open(imgfile).convert('RGB')
     sized = img.resize((m.width, m.height))
-    
-    for i in range(2):
-        start = time.time()
-        boxes = do_detect(m, sized, 0.5, 0.4, use_cuda)
-        finish = time.time()
-        if i == 1:
-            print('%s: Predicted in %f seconds.' % (imgfile, (finish-start)))
+
+    # for i in range(2):
+    start = time.time()
+    boxes = do_detect(m, sized, 0.5, 0.4, use_cuda)
+    finish = time.time()
+    # if i == 1:
+    print('%s: Predicted in %f seconds.' % (imgfile, (finish - start)))
 
     class_names = load_class_names(namesfile)
     plot_boxes(img, boxes, 'predictions.jpg', class_names)
-
 
 def detect_file(cfgfile, weightfile, input_file):
     m = Darknet(cfgfile)
@@ -61,23 +61,21 @@ def detect_file(cfgfile, weightfile, input_file):
             img = Image.open(imgfile).convert('RGB')
             sized = img.resize((m.width, m.height))
 
-            for i in range(2):
-                start = time.time()
-                boxes = do_detect(m, sized, 0.5, 0.4, use_cuda)
-                finish = time.time()
-                if i == 1:
-                    print('%s: Predicted in %f seconds.' % (imgfile, (finish - start)))
+            # for i in range(2):
+            start = time.time()
+            boxes = do_detect(m, sized, 0.5, 0.4, use_cuda)
+            finish = time.time()
+                # if i == 1:
+            print('%s: Predicted in %f seconds.' % (imgfile, (finish - start)))
 
             class_names = load_class_names(namesfile)
             image_num = os.path.splitext(os.path.split(imgfile)[1])[0]
             out_name = os.path.join('predictions', image_num + '.jpg')
             plot_boxes(img, boxes, out_name, class_names)
 
-
-def detect_video_cv2(cfgfile, weightfile, videofile):
+def detect_video_cv2(cfgfile, weightfile, videofile, tracking=False):
     import cv2
     m = Darknet(cfgfile)
-
     m.print_network()
     m.load_weights(weightfile)
     print('Loading weights from %s... Done!' % (weightfile))
@@ -96,6 +94,7 @@ def detect_video_cv2(cfgfile, weightfile, videofile):
     # cv2.imshow( 'window', img)
     # cv2.waitKey(0)
 
+    mot_tracker = Sort()
     cap = cv2.VideoCapture(videofile)
     framerate = cap.get(5)
     print('framerate is {}'.format(framerate))
@@ -120,16 +119,34 @@ def detect_video_cv2(cfgfile, weightfile, videofile):
         sized = cv2.resize(img, (m.width, m.height))
         sized = cv2.cvtColor(sized, cv2.COLOR_BGR2RGB)
 
-        for i in range(2):
-            start = time.time()
-            boxes = do_detect(m, sized, 0.5, 0.4, use_cuda)
-            finish = time.time()
-            # if i == 1:
-                # print('%s: Predicted in %f seconds.' % (imgfile, (finish - start)))
+        # for i in range(2):
+        #     start = time.time()
+        boxes = do_detect(m, sized, 0.5, 0.4, use_cuda)
+        if tracking:
+            width = img.shape[1]
+            height = img.shape[0]
+            if len(boxes) != 0:
+                boxes_arr = np.array(boxes)
+                x1 = (boxes_arr[:, 0] - boxes_arr[:, 2] / 2.0) * width
+                y1 = (boxes_arr[:, 1] - boxes_arr[:, 3] / 2.0) * height
+                x2 = (boxes_arr[:, 0] + boxes_arr[:, 2] / 2.0) * width
+                y2 = (boxes_arr[:, 1] + boxes_arr[:, 3] / 2.0) * height
+                updata_boxes = np.stack((x1, y1, x2, y2), axis=1)
+                updata_boxes = np.concatenate((updata_boxes, boxes_arr[:, 4:]), axis=1)
+            else:
+                updata_boxes = np.array(boxes)
 
-        class_names = load_class_names(namesfile)
-        image_np = plot_boxes_cv2(img, boxes, savename=False, class_names=class_names)
-        video.write(image_np)
+            track_bbs_ids = mot_tracker.update(updata_boxes)
+            boxes = track_bbs_ids.tolist()
+            class_names = load_class_names(namesfile)
+            image_np = plot_boxes_track(img, boxes, savename=False, class_names=class_names)
+            # cv2.imshow('tmp',image_np)
+            # cv2.waitKey(0)
+            video.write(image_np)
+        else:
+            class_names = load_class_names(namesfile)
+            image_np = plot_boxes_cv2(img, boxes, savename=False, class_names=class_names)
+            video.write(image_np)
 
 def detect_cv2(cfgfile, weightfile, imgfile):
     import cv2
@@ -205,7 +222,7 @@ if __name__ == '__main__':
         imgfile = sys.argv[3]
         # detect(cfgfile, weightfile, imgfile)
         # detect_file(cfgfile, weightfile, imgfile)
-        detect_video_cv2(cfgfile, weightfile, imgfile)
+        detect_video_cv2(cfgfile, weightfile, imgfile, tracking=True)
         #detect_cv2(cfgfile, weightfile, imgfile)
         #detect_skimage(cfgfile, weightfile, imgfile)
     else:

@@ -1,5 +1,5 @@
-train  = /home/zxf/Project/pytorch-yolo2/datasets/infrared_data/infrared_train.txt
-valid  = /home/zxf/Project/pytorch-yolo2/datasets/infrared_data/infrared_veri.txt
+train  = /home/zxf/Project/pytorch-yolo2/datasets/infrared_data_0408/infrared_train.txt
+valid  = /home/zxf/Project/pytorch-yolo2/datasets/infrared_data_0408/infrared_veri.txt
 names = /home/zxf/Project/pytorch-yolo2/datasets/infrared_data/infrared.name
-backup = backup/infrared_0415
+backup = backup/infrared_0416
 gpus  = 1,0
