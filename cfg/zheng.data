@@ -1,0 +1,5 @@
+train  = /home/zxf/Project/pytorch-yolo2/datasets/20180614/zheng_train.txt
+valid  = /home/zxf/Project/pytorch-yolo2/datasets/20180614/zheng_veri.txt
+names = /home/zxf/Project/pytorch-yolo2/datasets/20180614/zheng.name
+backup = backup/zheng_tiny_0612
+gpus  = 0

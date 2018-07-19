@@ -72,6 +72,9 @@ def detect_file(cfgfile, weightfile, input_file):
             image_num = os.path.splitext(os.path.split(imgfile)[1])[0]
             out_name = os.path.join('predictions', image_num + '.jpg')
             plot_boxes(img, boxes, out_name, class_names)
+    save_dir = os.path.join('predictions', os.path.split(weightfile)[1] + '.pkl')
+    torch.save(m, save_dir)
+
 
 def detect_video_cv2(cfgfile, weightfile, videofile, tracking=False):
     import cv2
@@ -221,8 +224,8 @@ if __name__ == '__main__':
         weightfile = sys.argv[2]
         imgfile = sys.argv[3]
         # detect(cfgfile, weightfile, imgfile)
-        # detect_file(cfgfile, weightfile, imgfile)
-        detect_video_cv2(cfgfile, weightfile, imgfile, tracking=True)
+        detect_file(cfgfile, weightfile, imgfile)
+        # detect_video_cv2(cfgfile, weightfile, imgfile, tracking=True)
         #detect_cv2(cfgfile, weightfile, imgfile)
         #detect_skimage(cfgfile, weightfile, imgfile)
     else:

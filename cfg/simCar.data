@@ -1,5 +1,5 @@
-train  = /home/zxf/Project/pytorch-yolo2/datasets/simCar_data/simCar_train.txt
-valid  = /home/zxf/Project/pytorch-yolo2/datasets/simCar_data/simCar_veri.txt
-names = /home/zxf/Project/pytorch-yolo2/datasets/simCar_data/simCar.name
-backup = backup/simCar_0324
-gpus  = 1,0
+train  = /home/zxf/Project/pytorch-yolo2/datasets/simCar_data_0513/simCar_train.txt
+valid  = /home/zxf/Project/pytorch-yolo2/datasets/simCar_data_0513/simCar_veri.txt
+names = /home/zxf/Project/pytorch-yolo2/datasets/simCar_data_0513/simCar.name
+backup = backup/simCar_0513
+gpus  = 0
