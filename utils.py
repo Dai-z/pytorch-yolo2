@@ -30,14 +30,14 @@ def bbox_iou(box1, box2, x1y1x2y2=True):
         w2 = box2[2] - box2[0]
         h2 = box2[3] - box2[1]
     else:
-        mx = min(box1[0]-box1[2]/2.0, box2[0]-box2[2]/2.0)
-        Mx = max(box1[0]+box1[2]/2.0, box2[0]+box2[2]/2.0)
-        my = min(box1[1]-box1[3]/2.0, box2[1]-box2[3]/2.0)
-        My = max(box1[1]+box1[3]/2.0, box2[1]+box2[3]/2.0)
-        w1 = box1[2]
-        h1 = box1[3]
-        w2 = box2[2]
-        h2 = box2[3]
+        mx = min(float(box1[0])-float(box1[2])/2.0, float(box2[0])-float(box2[2])/2.0)
+        Mx = max(float(box1[0])+float(box1[2])/2.0, float(box2[0])+float(box2[2])/2.0)
+        my = min(float(box1[1])-float(box1[3])/2.0, float(box2[1])-float(box2[3])/2.0)
+        My = max(float(box1[1])+float(box1[3])/2.0, float(box2[1])+float(box2[3])/2.0)
+        w1 = float(box1[2])
+        h1 = float(box1[3])
+        w2 = float(box2[2])
+        h2 = float(box2[3])
     uw = Mx - mx
     uh = My - my
     cw = w1 + w2 - uw
@@ -207,10 +207,12 @@ def plot_boxes_cv2(img, boxes, savename=None, class_names=None, color=None):
     height = img.shape[0]
     for i in range(len(boxes)):
         box = boxes[i]
-        x1 = int(round((box[0] - box[2]/2.0) * width))
-        y1 = int(round((box[1] - box[3]/2.0) * height))
-        x2 = int(round((box[0] + box[2]/2.0) * width))
-        y2 = int(round((box[1] + box[3]/2.0) * height))
+        # print('\033[36m {} \033[0m'.format(type(box[0])))
+        # print('\033[36m {} \033[0m'.format(type(box[1].item())))
+        x1 = int(round((box[0].item() - box[2].item()/2.0) * width))
+        y1 = int(round((box[1].item() - box[3].item()/2.0) * height))
+        x2 = int(round((box[0].item() + box[2].item()/2.0) * width))
+        y2 = int(round((box[1].item() + box[3].item()/2.0) * height))
 
         if color:
             rgb = color

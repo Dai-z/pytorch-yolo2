@@ -251,7 +251,7 @@ def test(epoch):
                     if iou > best_iou:
                         best_j = j
                         best_iou = iou
-                if best_iou > iou_thresh and boxes[best_j][6] == box_gt[6]:
+                if best_iou > iou_thresh and boxes[best_j][6] == int(box_gt[6]):
                     correct = correct+1
 
     precision = 1.0*correct/(proposals+eps)
@@ -263,7 +263,10 @@ def test(epoch):
 evaluate = False
 if evaluate:
     logging('evaluating ...')
+    test_time = time.time()
     test(0)
+    test_time = time.time() - test_time
+    print('time cost: {}s'.format(test_time))
 else:
     for epoch in range(int(init_epoch), int(max_epochs)):
         train(epoch)
