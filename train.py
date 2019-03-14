@@ -40,6 +40,7 @@ trainlist     = data_options['train']
 testlist      = data_options['valid']
 backupdir     = data_options['backup']
 nsamples      = file_lines(trainlist)
+ntest_samples = file_lines(testlist)
 gpus          = data_options['gpus']  # e.g. 0,1,2,3
 ngpus         = len(gpus.split(','))
 num_workers   = int(data_options['num_workers'])
@@ -260,13 +261,13 @@ def test(epoch):
     logging("precision: %f, recall: %f, fscore: %f" % (precision, recall, fscore))
 
 
-evaluate = False
+evaluate = True
 if evaluate:
     logging('evaluating ...')
     test_time = time.time()
     test(0)
     test_time = time.time() - test_time
-    print('time cost: {}s'.format(test_time))
+    print('time cost per sample: {:.4f}ms'.format(test_time * 1000 / ntest_samples))
 else:
     for epoch in range(int(init_epoch), int(max_epochs)):
         train(epoch)
